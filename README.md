@@ -6,3 +6,13 @@
 
 <img width="850" height="650" alt="image" src="https://github.com/user-attachments/assets/788178af-417b-4df0-85ad-f53396eb69a7" />
 
+#### Run 
+```
+Gnome Builder
+
+or
+
+cargo check && cargo build
+
+```
+
