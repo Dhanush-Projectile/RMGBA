@@ -1,3 +1,3 @@
-# rmgba
+# RMGBA
 
-A description of this project.
+### A WIP Emulator for GBA , GBC, GB
