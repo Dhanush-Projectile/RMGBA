@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=RMGBA
+Exec=rmgba
+Icon=app.rmgba.game
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=GTK;
+StartupNotify=true
+DBusActivatable=true

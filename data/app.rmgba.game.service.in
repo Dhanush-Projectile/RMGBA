@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=app.rmgba.game
+Exec=@bindir@/rmgba --gapplication-service

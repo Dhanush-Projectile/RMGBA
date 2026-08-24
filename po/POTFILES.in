@@ -1,0 +1,6 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
+data/app.rmgba.game.desktop.in
+data/app.rmgba.game.metainfo.xml.in
+data/app.rmgba.game.gschema.xml
+src/window.ui
