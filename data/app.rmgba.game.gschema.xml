@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="rmgba">
 	<schema id="app.rmgba.game" path="/app/rmgba/game/">
+		<!-- Keyboard mapping for each GBA control. Each value is a GDK keyval
+		     (gdk::Key). A value of 0 means "use the built-in default" for that
+		     control (resolved in code, matching the classic RMGBA layout). -->
+		<key name="key-a" type="u">
+			<default>0</default>
+			<summary>Keyboard key for the A button</summary>
+		</key>
+		<key name="key-b" type="u">
+			<default>0</default>
+			<summary>Keyboard key for the B button</summary>
+		</key>
+		<key name="key-select" type="u">
+			<default>0</default>
+			<summary>Keyboard key for the Select button</summary>
+		</key>
+		<key name="key-start" type="u">
+			<default>0</default>
+			<summary>Keyboard key for the Start button</summary>
+		</key>
+		<key name="key-up" type="u">
+			<default>0</default>
+			<summary>Keyboard key for D-Pad Up</summary>
+		</key>
+		<key name="key-down" type="u">
+			<default>0</default>
+			<summary>Keyboard key for D-Pad Down</summary>
+		</key>
+		<key name="key-left" type="u">
+			<default>0</default>
+			<summary>Keyboard key for D-Pad Left</summary>
+		</key>
+		<key name="key-right" type="u">
+			<default>0</default>
+			<summary>Keyboard key for D-Pad Right</summary>
+		</key>
+		<key name="key-l" type="u">
+			<default>0</default>
+			<summary>Keyboard key for the L shoulder button</summary>
+		</key>
+		<key name="key-r" type="u">
+			<default>0</default>
+			<summary>Keyboard key for the R shoulder button</summary>
+		</key>
 	</schema>
 </schemalist>

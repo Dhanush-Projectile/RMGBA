@@ -25,11 +25,12 @@ use std::sync::Arc;
 
 use adw::subclass::prelude::*;
 use gettextrs::gettext;
+use gtk::glib::translate::IntoGlib;
 use gtk::prelude::*;
 use gtk::CompositeTemplate;
-use gtk::{gdk, gio, glib, EventControllerKey};
+use gtk::{gdk, gio, glib, EventControllerKey, PropagationPhase};
 
-use crate::emulator::{self, EmuEvent, Emulator};
+use crate::emulator::{EmuEvent, Emulator};
 use crate::saves;
 use mgba::{GBA_HEIGHT, GBA_WIDTH};
 
@@ -239,16 +240,20 @@ impl RmgbaWindow {
     }
 
     fn setup_key_input(&self) {
+        let controls = crate::settings::Controls::new();
         let controller = EventControllerKey::new();
+        controller.set_propagation_phase(PropagationPhase::Capture);
         controller.connect_key_pressed(
             glib::clone!(
                 #[weak(rename_to = window)]
                 self,
+                #[strong(rename_to = controls)]
+                controls,
                 #[upgrade_or]
                 glib::Propagation::Proceed,
                 move |_, keyval, _, _| {
-                    if let Some(key) = map_key(keyval) {
-                        window.imp().keys.fetch_or(key, Ordering::Relaxed);
+                    if let Some(bit) = controls.bit_for_keyval(keyval.into_glib()) {
+                        window.imp().keys.fetch_or(bit, Ordering::Relaxed);
                         return glib::Propagation::Stop;
                     }
                     glib::Propagation::Proceed
@@ -258,9 +263,11 @@ impl RmgbaWindow {
         controller.connect_key_released(glib::clone!(
             #[weak(rename_to = window)]
             self,
+            #[strong(rename_to = controls)]
+            controls,
             move |_, keyval, _, _| {
-                if let Some(key) = map_key(keyval) {
-                    window.imp().keys.fetch_and(!key, Ordering::Relaxed);
+                if let Some(bit) = controls.bit_for_keyval(keyval.into_glib()) {
+                    window.imp().keys.fetch_and(!bit, Ordering::Relaxed);
                 }
             }
         ));
@@ -268,19 +275,3 @@ impl RmgbaWindow {
     }
 }
 
-fn map_key(keyval: gdk::Key) -> Option<u32> {
-    use emulator::*;
-    match keyval {
-        gdk::Key::x => Some(KEY_A),
-        gdk::Key::z => Some(KEY_B),
-        gdk::Key::BackSpace => Some(KEY_SELECT),
-        gdk::Key::Return | gdk::Key::KP_Enter => Some(KEY_START),
-        gdk::Key::Right => Some(KEY_RIGHT),
-        gdk::Key::Left => Some(KEY_LEFT),
-        gdk::Key::Up => Some(KEY_UP),
-        gdk::Key::Down => Some(KEY_DOWN),
-        gdk::Key::a => Some(KEY_L),
-        gdk::Key::s => Some(KEY_R),
-        _ => None,
-    }
-}

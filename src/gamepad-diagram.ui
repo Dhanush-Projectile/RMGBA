@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkBox" id="gamepad_layout">
+    <property name="orientation">1</property>
+    <property name="halign">3</property>
+    <property name="valign">3</property>
+    <property name="spacing">24</property>
+
+    <!-- Top Row: Shoulder Buttons -->
+    <child>
+      <object class="GtkBox">
+        <property name="homogeneous">true</property>
+        <property name="spacing">200</property>
+        <child>
+          <object class="GtkButton" id="gamepad_l">
+            <property name="label">L</property>
+            <property name="width-request">80</property>
+            <property name="height-request">40</property>
+            <property name="sensitive">false</property>
+            <style>
+              <class name="pill"/>
+              <class name="osd"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="gamepad_r">
+            <property name="label">R</property>
+            <property name="width-request">80</property>
+            <property name="height-request">40</property>
+            <property name="sensitive">false</property>
+            <style>
+              <class name="pill"/>
+              <class name="osd"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+
+    <!-- Middle Section: D-Pad (Left) and Face Buttons A/B (Right) -->
+    <child>
+      <object class="GtkBox">
+        <property name="spacing">120</property>
+        <property name="valign">3</property>
+
+        <!-- D-Pad Grid simulation -->
+        <child>
+          <object class="GtkGrid">
+            <property name="row-spacing">4</property>
+            <property name="column-spacing">4</property>
+            <child>
+              <object class="GtkButton" id="gamepad_up">
+                <property name="icon-name">pan-up-symbolic</property>
+                <property name="width-request">48</property>
+                <property name="height-request">48</property>
+                <property name="sensitive">false</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="gamepad_left">
+                <property name="icon-name">pan-left-symbolic</property>
+                <property name="width-request">48</property>
+                <property name="height-request">48</property>
+                <property name="sensitive">false</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="gamepad_right">
+                <property name="icon-name">pan-right-symbolic</property>
+                <property name="width-request">48</property>
+                <property name="height-request">48</property>
+                <property name="sensitive">false</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="gamepad_down">
+                <property name="icon-name">pan-down-symbolic</property>
+                <property name="width-request">48</property>
+                <property name="height-request">48</property>
+                <property name="sensitive">false</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <!-- Face Buttons: B and A -->
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">12</property>
+            <property name="valign">3</property>
+            <child>
+              <object class="GtkButton" id="gamepad_b">
+                <property name="label">B</property>
+                <property name="width-request">56</property>
+                <property name="height-request">56</property>
+                <property name="sensitive">false</property>
+                <style>
+                  <class name="circular"/>
+                  <class name="destructive-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="gamepad_a">
+                <property name="label">A</property>
+                <property name="width-request">56</property>
+                <property name="height-request">56</property>
+                <property name="sensitive">false</property>
+                <style>
+                  <class name="circular"/>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+
+    <!-- Bottom Row: Select and Start -->
+    <child>
+      <object class="GtkBox">
+        <property name="spacing">24</property>
+        <property name="halign">3</property>
+        <child>
+          <object class="GtkButton" id="gamepad_select">
+            <property name="label">SELECT</property>
+            <property name="width-request">70</property>
+            <property name="height-request">28</property>
+            <property name="sensitive">false</property>
+            <style>
+              <class name="pill"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="gamepad_start">
+            <property name="label">START</property>
+            <property name="width-request">70</property>
+            <property name="height-request">28</property>
+            <property name="sensitive">false</property>
+            <style>
+              <class name="pill"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+
+  </object>
+</interface>
