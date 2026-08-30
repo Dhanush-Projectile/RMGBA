@@ -49,6 +49,10 @@
         <attribute name="label" translatable="yes">_Open ROM…</attribute>
         <attribute name="action">win.open</attribute>
       </item>
+      <item>
+        <attribute name="label" translatable="yes">_Load Save</attribute>
+        <attribute name="action">win.load_save</attribute>
+      </item>
     </section>
     <section>
       <item>

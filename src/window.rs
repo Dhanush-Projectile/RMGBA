@@ -30,6 +30,7 @@ use gtk::CompositeTemplate;
 use gtk::{gdk, gio, glib, EventControllerKey};
 
 use crate::emulator::{self, EmuEvent, Emulator};
+use crate::saves;
 use mgba::{GBA_HEIGHT, GBA_WIDTH};
 
 mod imp {
@@ -46,6 +47,8 @@ mod imp {
 
         pub emulator: RefCell<Option<Emulator>>,
         pub keys: Arc<AtomicU32>,
+        pub current_rom: RefCell<Option<PathBuf>>,
+        pub load_save_action: RefCell<Option<gio::SimpleAction>>,
     }
 
     #[glib::object_subclass]
@@ -68,6 +71,18 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             let obj = self.obj();
+
+            let load_save = gio::SimpleAction::new("load_save", None);
+            load_save.set_enabled(false);
+            let weak = obj.downgrade();
+            load_save.connect_activate(move |_, _| {
+                if let Some(win) = weak.upgrade() {
+                    win.load_save();
+                }
+            });
+            obj.add_action(&load_save);
+            self.load_save_action.replace(Some(load_save));
+
             obj.setup_key_input();
             obj.connect_close_request(|_| glib::Propagation::Proceed);
             obj.connect_destroy(|win| {
@@ -117,7 +132,7 @@ impl RmgbaWindow {
                 move |result| {
                     if let Ok(file) = result {
                         if let Some(path) = file.path() {
-                            window.start_emulation(path);
+                            window.start_emulation(path, None);
                         }
                     }
                 }
@@ -125,9 +140,13 @@ impl RmgbaWindow {
         );
     }
 
-    fn start_emulation(&self, path: PathBuf) {
+    fn start_emulation(&self, path: PathBuf, save: Option<PathBuf>) {
         // Stop any running instance first.
         self.imp().emulator.replace(None);
+
+        // When no explicit save was supplied (i.e. the ROM was just opened),
+        // auto-apply the save last remembered for this ROM, if one exists.
+        let save = save.or_else(|| saves::for_rom(&path));
 
         // Marshal events from the emulation thread to this widget.
         // SendWeakRef is the Send+Sync weak reference for GTK objects.
@@ -142,12 +161,54 @@ impl RmgbaWindow {
             }
         });
 
-        match Emulator::start(path, Arc::clone(&self.imp().keys), on_event) {
+        match Emulator::start(path.clone(), save, Arc::clone(&self.imp().keys), on_event) {
             Ok(emulator) => {
                 self.imp().emulator.replace(Some(emulator));
+                self.imp().current_rom.replace(Some(path));
+                if let Some(action) = self.imp().load_save_action.borrow().as_ref() {
+                    action.set_enabled(true);
+                }
             }
             Err(message) => self.show_error(&message),
         }
+    }
+
+    /// Opens a file chooser to pick a `.sav` file, then restarts the loaded ROM
+    /// with that save applied (resetting the game).
+    fn load_save(&self) {
+        let Some(rom) = self.imp().current_rom.borrow().clone() else {
+            return;
+        };
+
+        let filter = gtk::FileFilter::new();
+        filter.set_name(Some(&gettext("GBA Save files")));
+        filter.add_pattern("*.sav");
+
+        let filters = gio::ListStore::new::<gtk::FileFilter>();
+        filters.append(&filter);
+
+        let dialog = gtk::FileDialog::builder()
+            .title(gettext("Load Save"))
+            .filters(&filters)
+            .modal(true)
+            .build();
+
+        dialog.open(
+            Some(self),
+            None::<&gio::Cancellable>,
+            glib::clone!(
+                #[weak(rename_to = window)]
+                self,
+                move |result| {
+                    if let Ok(file) = result {
+                        if let Some(save) = file.path() {
+                            saves::remember(&rom, &save);
+                            window.start_emulation(rom, Some(save));
+                        }
+                    }
+                }
+            ),
+        );
     }
 
     /// Uploads one frame to a texture and displays it.

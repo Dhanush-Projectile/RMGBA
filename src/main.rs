@@ -21,6 +21,7 @@
 mod application;
 mod config;
 mod emulator;
+mod saves;
 mod window;
 
 use self::application::RmgbaApplication;

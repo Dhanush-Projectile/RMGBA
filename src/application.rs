@@ -46,6 +46,7 @@ mod imp {
             obj.setup_gactions();
             obj.set_accels_for_action("app.quit", &["<control>q"]);
             obj.set_accels_for_action("win.open", &["<control>o"]);
+            obj.set_accels_for_action("win.load_save", &["<control>l"]);
         }
     }
 

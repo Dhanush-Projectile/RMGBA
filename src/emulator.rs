@@ -111,6 +111,7 @@ impl Emulator {
     /// polled once per frame.
     pub fn start(
         rom: PathBuf,
+        save: Option<PathBuf>,
         keys: Arc<AtomicU32>,
         on_event: EventHandler,
     ) -> Result<Self, String> {
@@ -127,7 +128,7 @@ impl Emulator {
                     let on_event = Arc::clone(&on_event);
                     context.invoke(move || on_event(event));
                 };
-                run_emulation(rom, keys, thread_running, &send);
+                run_emulation(rom, save, keys, thread_running, &send);
             })
             .map_err(|e| format!("failed to spawn emulation thread: {e}"))?;
 
@@ -215,7 +216,13 @@ impl AudioOutput {
     }
 }
 
-fn run_emulation(rom: PathBuf, keys: Arc<AtomicU32>, running: Arc<AtomicBool>, send: &dyn Fn(EmuEvent)) {
+fn run_emulation(
+    rom: PathBuf,
+    save: Option<PathBuf>,
+    keys: Arc<AtomicU32>,
+    running: Arc<AtomicBool>,
+    send: &dyn Fn(EmuEvent),
+) {
     let mut core = match Core::new() {
         Ok(core) => core,
         Err(err) => {
@@ -223,7 +230,7 @@ fn run_emulation(rom: PathBuf, keys: Arc<AtomicU32>, running: Arc<AtomicBool>, s
             return;
         }
     };
-    if let Err(err) = core.load_rom(&rom) {
+    if let Err(err) = core.load_rom_with_save(&rom, save.as_deref()) {
         send(EmuEvent::Error(format!("failed to load ROM: {err:?}")));
         return;
     }
